@@ -12,7 +12,7 @@ namespace DisableOnJoin
 
         public override string Author => "Quinci";
 
-        public override string Description => "Prevents exploits from dimension switching in ssc.";
+        public override string Description => "Prevents some ssc exploits.";
 
         public override string Name => "DisableOnJoin";
 
@@ -39,11 +39,18 @@ namespace DisableOnJoin
         }
         private async void OnPlayerPostLoginAsync(PlayerPostLoginEventArgs args)
         {
-            await Task.Delay(600);
+            
             if (!args.Player.HasPermission(TShockAPI.Permissions.ban) && Main.ServerSideCharacter)
             {
-                args.Player.Disable(reason: "");
+                
                 args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
+                args.Player.SendData(PacketTypes.NpcTalk, "", 0);
+                for (int index = 0; index < 41; index++)
+                    {
+                    args.Player.SendData(PacketTypes.NpcShopItem, "", index, 0, 0, 0, 0);
+                    }
+                args.Player.Disable(reason: "");
+                await Task.Delay(600);
                 args.Player.SendServerCharacter();
             }
         }
