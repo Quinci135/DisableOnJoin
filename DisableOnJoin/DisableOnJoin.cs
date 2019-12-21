@@ -51,6 +51,7 @@ namespace DisableOnJoin
                     }
                 args.Player.Disable(reason: "");
                 await Task.Delay(600);
+                args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                 args.Player.Spawn();
                 args.Player.SendServerCharacter();
             }
