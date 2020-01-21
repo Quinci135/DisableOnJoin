@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Terraria;
 using TerrariaApi.Server;
+using TShockAPI;
 using TShockAPI.Hooks;
 
 namespace DisableOnJoin
@@ -16,7 +17,7 @@ namespace DisableOnJoin
 
         public override string Name => "DisableOnJoin";
 
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override Version Version => new Version(1, 4, 2, 2);
 
         public DisableOnJoin(Main game) : base(game)
         {
@@ -37,27 +38,42 @@ namespace DisableOnJoin
             base.Dispose(disposing);
 
         }
-        
+
         private async void OnPlayerPostLoginAsync(PlayerPostLoginEventArgs args)
         {
             
-            if (!args.Player.HasPermission(TShockAPI.Permissions.ban) && Main.ServerSideCharacter)
+            if (Main.ServerSideCharacter)
             {
 
                 try
                 {
-
+                    args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.NpcTalk, "", 0);
                     for (int index = 0; index < 41; index++)
                     {
                         args.Player.SendData(PacketTypes.NpcShopItem, "", index, 0, 0, 0, 0);
                     }
                     args.Player.Disable(reason: "");
+                    args.Player.SetBuff(149, 3600, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
-                    args.Player.Spawn();
                     args.Player.SendServerCharacter();
+                    args.Player.Spawn();
+                    args.Player.SetBuff(149, 3600, true);
+                    await Task.Delay(600);
+                    args.Player.Disable(reason: "");
+                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
+                    args.Player.SendServerCharacter();
+                    args.Player.Spawn();
+                    args.Player.SetBuff(149, 3600, true);
+                    await Task.Delay(600);
+                    args.Player.Disable(reason: "");
+                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
+                    args.Player.SendServerCharacter();
+                    args.Player.Spawn();
+                    args.Player.SetBuff(149, 1000, true);
+
                 }
 
                 catch (Exception e)
