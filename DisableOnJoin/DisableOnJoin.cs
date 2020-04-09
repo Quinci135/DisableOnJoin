@@ -4,6 +4,7 @@ using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
+using Terraria.Localization;
 
 namespace DisableOnJoin
 {
@@ -54,26 +55,26 @@ namespace DisableOnJoin
                         args.Player.SendData(PacketTypes.NpcShopItem, "", index, 0, 0, 0, 0);
                     }
                     args.Player.Disable(reason: "");
-                    args.Player.SetBuff(149, 3600, true);
+                    args.Player.SetBuff(149, 430, true);
+                    await Task.Delay(600);
+                    args.Player.Disable(reason: "");
+                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
+                    //args.Player.SendServerCharacter();
+                    args.Player.Spawn();
+                    args.Player.SetBuff(149, 430, true);
+                    await Task.Delay(600);
+                    args.Player.Disable(reason: "");
+                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
+                    //args.Player.SendServerCharacter();
+                    args.Player.Spawn();
+                    args.Player.SetBuff(149, 430, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     args.Player.SendServerCharacter();
                     args.Player.Spawn();
-                    args.Player.SetBuff(149, 3600, true);
-                    await Task.Delay(600);
-                    args.Player.Disable(reason: "");
-                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
-                    args.Player.SendServerCharacter();
-                    args.Player.Spawn();
-                    args.Player.SetBuff(149, 3600, true);
-                    await Task.Delay(600);
-                    args.Player.Disable(reason: "");
-                    args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
-                    args.Player.SendServerCharacter();
-                    args.Player.Spawn();
-                    args.Player.SetBuff(149, 1000, true);
-
+                    NetMessage.SendData(50, -1, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
+                    NetMessage.SendData(50, args.Player.Index, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
                 }
 
                 catch (Exception e)
