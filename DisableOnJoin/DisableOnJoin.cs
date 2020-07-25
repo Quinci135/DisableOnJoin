@@ -5,6 +5,11 @@ using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
 using Terraria.Localization;
+using System.IO;
+using System.IO.Streams;
+using TShockAPI.Net;
+using Terraria.Net;
+using Microsoft.Xna.Framework;
 
 namespace DisableOnJoin
 {
@@ -22,12 +27,14 @@ namespace DisableOnJoin
 
         public DisableOnJoin(Main game) : base(game)
         {
-            
+            Order = 25;
         }
 
         public override void Initialize()
         {
+            Commands.ChatCommands.Add(new Command("disableonjoin.spawnme", SpawnMe, "spawnme") { HelpText = "Spawns you with spawning into world context"});
             PlayerHooks.PlayerPostLogin += OnPlayerPostLoginAsync;
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
         }
 
         protected override void Dispose(bool disposing)
@@ -35,11 +42,41 @@ namespace DisableOnJoin
             if (disposing)
             {
                 PlayerHooks.PlayerPostLogin -= OnPlayerPostLoginAsync;
+                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
             }
             base.Dispose(disposing);
-
         }
 
+        private void SpawnMe(CommandArgs args)
+        {
+            args.Player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
+            args.Player.SendMessage("You were spawned into the world.", Color.Lime);
+        }
+
+        private void OnJoin(JoinEventArgs args)
+        {
+            TSPlayer player = TShock.Players[args.Who];
+
+            if (!player.IsLoggedIn)
+            {
+                player.SendMessage("――――――――――――――――――――――――――――――", Color.SandyBrown);
+                player.SendInfoMessage("You must /register and /login in /rift in order to play on survival!");
+                player.SendMessage("――――――――――――――――――――――――――――――", Color.SandyBrown);
+                /*using (var stream = new MemoryStream())
+                {
+                    stream.WriteByte((byte)PacketTypes.Placeholder);
+                    stream.WriteInt16(2);
+                    stream.WriteString("rift");
+                    player.SendRawData(stream.ToArray());
+                }*/
+            }
+            else
+            {
+                //NetMessage.SendData((int)PacketTypes.PlayerDeathV2, args.Who, -1, null, args.Who, 9999, 1, 0);
+                NetMessage.SendPlayerDeath((int)PacketTypes.PlayerDeathV2, null, 99999, 1, false);
+            }
+            
+        }
         private async void OnPlayerPostLoginAsync(PlayerPostLoginEventArgs args)
         {
             
@@ -60,21 +97,25 @@ namespace DisableOnJoin
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     //args.Player.SendServerCharacter();
-                    args.Player.Spawn();
+                    //args.Player.Spawn(Terraria.PlayerSpawnContext.SpawningIntoWorld);
                     args.Player.SetBuff(149, 430, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     //args.Player.SendServerCharacter();
-                    args.Player.Spawn();
+                    //args.Player.Spawn(Terraria.PlayerSpawnContext.SpawningIntoWorld);
                     args.Player.SetBuff(149, 430, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     args.Player.SendServerCharacter();
-                    args.Player.Spawn();
-                    NetMessage.SendData(50, -1, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
-                    NetMessage.SendData(50, args.Player.Index, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
+                    if (PersistentDeath.PersistentDeath.AliveFrom.ContainsKey(args.Player.Account.ID))
+                    {
+                        if (((PersistentDeath.PersistentDeath.AliveFrom[args.Player.Account.ID] - DateTime.UtcNow).TotalSeconds <= 0))
+                        {
+                            args.Player.Spawn(Terraria.PlayerSpawnContext.SpawningIntoWorld);
+                        }
+                    }
                 }
 
                 catch (Exception e)

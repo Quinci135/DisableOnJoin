@@ -28,14 +28,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="OTAPI">
+      <HintPath>References\OTAPI.dll</HintPath>
+    </Reference>
     <Reference Include="TerrariaServer">
-      <HintPath>bin\Release\TerrariaServer.exe</HintPath>
+      <HintPath>References\TerrariaServer.exe</HintPath>
     </Reference>
     <Reference Include="TShockAPI">
-      <HintPath>bin\Release\TShockAPI.dll</HintPath>
+      <HintPath>References\TShockAPI.dll</HintPath>
     </Reference>
-    <Reference Include="OTAPI">
-      <HintPath>bin\Release\OTAPI.dll</HintPath>
+    <Reference Include="PersistentDeath">
+      <HintPath>References\PersistentDeath.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
