@@ -22,7 +22,7 @@ namespace DisableOnJoin
 
         public override string Name => "DisableOnJoin";
 
-        public override Version Version => new Version(1, 5, 2, 4);
+        public override Version Version => new Version(1, 5, 3, 0);
 
         public DisableOnJoin(Main game) : base(game)
         {
@@ -31,7 +31,6 @@ namespace DisableOnJoin
 
         public override void Initialize()
         {
-            //Commands.ChatCommands.Add(new Command("disableonjoin.spawnme", SpawnMe, "spawnme") { HelpText = "Spawns you with spawning into world context"});
             PlayerHooks.PlayerPostLogin += OnPlayerPostLoginAsync;
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
         }
@@ -45,59 +44,10 @@ namespace DisableOnJoin
             }
             base.Dispose(disposing);
         }
-        /*
-        private void SpawnMe(CommandArgs args) //Test command
-        {
-            if (args.Parameters.Count == 0)
-            {
-                args.Player.SendErrorMessage("One param, world, recall, or revive");
-                return;
-            }
-            switch (args.Parameters[0])
-            {
-                case "world":
-                    args.Player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
-                    args.Player.SendMessage("You were spawned into the world.", Color.Lime);
-                    break;
-                case "recall":
-                    args.Player.Spawn(PlayerSpawnContext.RecallFromItem);
-                    args.Player.SendMessage("You were recalled.", Color.Lime);
-                    break;
-                case "revive":
-                    args.Player.Spawn(PlayerSpawnContext.ReviveFromDeath);
-                    args.Player.SendMessage("You were revived.", Color.Lime);
-                    break;
-                default:
-                    args.Player.SendErrorMessage("One param, world, recall, or revive");
-                    break;
-            }
-        }
-        */
+
         private void OnGreet(GreetPlayerEventArgs args)
         {
             TSPlayer player = TShock.Players[args.Who];
-            if (!player.IsLoggedIn) //Prevent guests from entering survival, send them all to rift
-            {
-                player.SendMessage("――――――――――――――――――――――――――――――――", Color.SandyBrown);
-                player.SendInfoMessage("You must /register and /login in /rift in order to play on survival!");
-                player.SendMessage("――――――――――――――――――――――――――――――――", Color.SandyBrown);
-                player.SendRawData(new byte[] { 10, 0, 67, 2, 0, 4, 114, 105, 102, 116});
-                /*using (var stream = new MemoryStream())
-                {
-                    stream.Position = 2;
-                    stream.WriteByte((byte)PacketTypes.Placeholder);
-                    stream.WriteInt16(2);
-                    stream.WriteString("rift");
-                    long pos = stream.Position;
-                    stream.Position = 0;
-                    stream.WriteInt16((short)pos);
-                    player.SendRawData(stream.ToArray());
-                    Console.WriteLine("Go to rift byte Array:");
-                    stream.ToArray().ForEach(p => Console.WriteLine(p));
-                    //Console.WriteLine($"Go to rift byte Array:\n{stream.ToArray().ForEach(() => { })}");
-                }*/
-            }
-            else
             {
                 player.IsDisabledPendingTrashRemoval = true; //This is so tshock's ssc autosave will not save cheated character info (like using a life crystal). Ssc tshock build has the disable message removed.
             }
