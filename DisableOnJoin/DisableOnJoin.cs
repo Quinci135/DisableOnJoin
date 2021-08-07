@@ -45,7 +45,6 @@ namespace DisableOnJoin
             
             if (Main.ServerSideCharacter)
             {
-
                 try
                 {
                     args.Player.Disable(reason: "");
@@ -60,25 +59,23 @@ namespace DisableOnJoin
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     //args.Player.SendServerCharacter();
-                    args.Player.Spawn();
+                    args.Player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
                     args.Player.SetBuff(149, 430, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     //args.Player.SendServerCharacter();
-                    args.Player.Spawn();
+                    args.Player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
                     args.Player.SetBuff(149, 430, true);
                     await Task.Delay(600);
                     args.Player.Disable(reason: "");
                     args.Player.SendData(PacketTypes.PlayerAnimation, "", 0, 0);
                     args.Player.SendServerCharacter();
-                    args.Player.Spawn();
+                    args.Player.Spawn(PlayerSpawnContext.SpawningIntoWorld);
                     NetMessage.SendData(50, -1, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
                     NetMessage.SendData(50, args.Player.Index, -1, NetworkText.Empty, args.Player.Index, 0f, 0f, 0f, 0);
                 }
-
                 catch (Exception e)
-
                 {
                     Console.WriteLine($"DisableOnJoin threw an exception: {e}");
                 }
